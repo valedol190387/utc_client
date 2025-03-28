@@ -1,6 +1,3 @@
-UTM convector
-
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -18,12 +15,6 @@ UTM convector
             --tg-theme-button-text-color: #fff;
         }
 
-        [data-theme="dark"] {
-            --tg-theme-bg-color: #1f1f1f;
-            --tg-theme-text-color: #fff;
-            --tg-theme-hint-color: #aaa;
-        }
-
         * {
             margin: 0;
             padding: 0;
@@ -38,7 +29,6 @@ UTM convector
             max-width: 500px;
             margin: 0 auto;
             line-height: 1.5;
-            transition: background-color 0.3s ease;
         }
 
         .container {
@@ -48,23 +38,6 @@ UTM convector
             padding: 20px;
             position: relative;
             overflow: hidden;
-        }
-
-        .theme-switcher {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            cursor: pointer;
-            font-size: 24px;
-            z-index: 100;
-            background: none;
-            border: none;
-            color: var(--tg-theme-text-color);
-            transition: transform 0.3s ease;
-        }
-
-        .theme-switcher:hover {
-            transform: scale(1.1);
         }
 
         h1 {
@@ -122,7 +95,6 @@ UTM convector
             background-repeat: no-repeat;
             background-position: right 12px center;
             background-size: 12px auto;
-            transition: border-color 0.3s ease;
         }
 
         select:focus {
@@ -190,7 +162,6 @@ UTM convector
 <body>
     <div class="stars" id="stars"></div>
     <div class="container">
-        <button class="theme-switcher" id="themeSwitcher">🌕</button>
         <h1>Настройка времени медитаций</h1>
         
         <div class="timezone-info" id="timezoneInfo">
@@ -286,16 +257,6 @@ UTM convector
                 starsContainer.appendChild(star);
             }
         }
-
-        // Переключатель темы
-        let isDarkTheme = false;
-        const themeSwitcher = document.getElementById('themeSwitcher');
-        
-        themeSwitcher.addEventListener('click', () => {
-            isDarkTheme = !isDarkTheme;
-            document.body.setAttribute('data-theme', isDarkTheme ? 'dark' : 'light');
-            themeSwitcher.textContent = isDarkTheme ? '🌑' : '🌕';
-        });
 
         // Функция для форматирования времени в формат HH:MM
         function formatTime(hours, minutes) {
