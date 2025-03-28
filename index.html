@@ -1,0 +1,340 @@
+UTM convector
+
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Настройка времени медитаций</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root {
+            --tg-theme-bg-color: #fff;
+            --tg-theme-text-color: #000;
+            --tg-theme-hint-color: #999;
+            --tg-theme-link-color: #2481cc;
+            --tg-theme-button-color: #2481cc;
+            --tg-theme-button-text-color: #fff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--tg-theme-bg-color);
+            color: var(--tg-theme-text-color);
+            padding: 20px;
+            max-width: 500px;
+            margin: 0 auto;
+            line-height: 1.5;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            text-align: center;
+            color: var(--tg-theme-text-color);
+        }
+
+        .timezone-info {
+            background: rgba(36, 129, 204, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+
+        .timezone-info p {
+            margin: 5px 0;
+            font-size: 0.9rem;
+            color: var(--tg-theme-hint-color);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--tg-theme-text-color);
+            font-size: 0.9rem;
+        }
+
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            background-color: var(--tg-theme-bg-color);
+            color: var(--tg-theme-text-color);
+            font-size: 1rem;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23666666%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.4-12.8z%22%2F%3E%3C%2Fsvg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 12px auto;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: var(--tg-theme-button-color);
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background-color: var(--tg-theme-button-color);
+            color: var(--tg-theme-button-text-color);
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        button:active {
+            opacity: 0.8;
+        }
+
+        .success-message {
+            display: none;
+            text-align: center;
+            color: #4CAF50;
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 8px;
+            background: rgba(76, 175, 80, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Настройка времени медитаций</h1>
+        
+        <div class="timezone-info" id="timezoneInfo">
+            <p>Определяем ваш часовой пояс...</p>
+        </div>
+
+        <form id="meditationForm">
+            <div class="form-group">
+                <label for="utc">Часовой пояс (UTC)</label>
+                <select id="utc" name="utc" required>
+                    <option value="-12">UTC-12</option>
+                    <option value="-11">UTC-11</option>
+                    <option value="-10">UTC-10</option>
+                    <option value="-9">UTC-9</option>
+                    <option value="-8">UTC-8</option>
+                    <option value="-7">UTC-7</option>
+                    <option value="-6">UTC-6</option>
+                    <option value="-5">UTC-5</option>
+                    <option value="-4">UTC-4</option>
+                    <option value="-3">UTC-3</option>
+                    <option value="-2">UTC-2</option>
+                    <option value="-1">UTC-1</option>
+                    <option value="0">UTC+0</option>
+                    <option value="1">UTC+1</option>
+                    <option value="2">UTC+2</option>
+                    <option value="3">UTC+3</option>
+                    <option value="4">UTC+4</option>
+                    <option value="5">UTC+5</option>
+                    <option value="6">UTC+6</option>
+                    <option value="7">UTC+7</option>
+                    <option value="8">UTC+8</option>
+                    <option value="9">UTC+9</option>
+                    <option value="10">UTC+10</option>
+                    <option value="11">UTC+11</option>
+                    <option value="12">UTC+12</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="morningTime">Время утренней медитации</label>
+                <select id="morningTime" name="morningTime" required>
+                    <option value="">Выберите время</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="noonTime">Время дневной медитации</label>
+                <select id="noonTime" name="noonTime" required>
+                    <option value="">Выберите время</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="eveningTime">Время вечерней медитации</label>
+                <select id="eveningTime" name="eveningTime" required>
+                    <option value="">Выберите время</option>
+                </select>
+            </div>
+
+            <button type="submit" id="submitButton">Подтвердить выбор</button>
+        </form>
+
+        <div class="success-message" id="successMessage">
+            Настройки успешно сохранены!
+        </div>
+    </div>
+
+    <script>
+        // Инициализация Telegram WebApp
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+
+        // Функция для форматирования времени в формат HH:MM
+        function formatTime(hours, minutes) {
+            return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+        }
+
+        // Заполнение выпадающих списков временем
+        function populateTimeSelects() {
+            const timeSelects = [
+                { id: 'morningTime', defaultTime: '10:00' },
+                { id: 'noonTime', defaultTime: '15:00' },
+                { id: 'eveningTime', defaultTime: '20:00' }
+            ];
+            
+            timeSelects.forEach(({ id, defaultTime }) => {
+                const select = document.getElementById(id);
+                
+                for (let hour = 0; hour < 24; hour++) {
+                    for (let minute = 0; minute < 60; minute += 30) {
+                        const timeString = formatTime(hour, minute);
+                        const option = document.createElement('option');
+                        option.value = timeString;
+                        option.textContent = timeString;
+                        if (timeString === defaultTime) {
+                            option.selected = true;
+                        }
+                        select.appendChild(option);
+                    }
+                }
+            });
+        }
+
+        // Определение часового пояса пользователя
+        async function detectTimezone() {
+            try {
+                // Используем несколько сервисов для определения временной зоны
+                const [geoResponse, ipapiResponse] = await Promise.all([
+                    fetch('https://get.geojs.io/v1/ip/geo.json'),
+                    fetch('https://ipapi.co/json/')
+                ]);
+
+                const geoData = await geoResponse.json();
+                const ipapiData = await ipapiResponse.json();
+
+                // Получаем смещение в минутах из браузера
+                const localOffset = new Date().getTimezoneOffset();
+                const browserUtcOffset = -(localOffset / 60);
+
+                // Приоритет отдаем ipapi.co, если оно доступно
+                let finalOffset = browserUtcOffset;
+                let city = 'Не определен';
+                let country = 'Не определена';
+
+                if (ipapiData && ipapiData.utc_offset) {
+                    finalOffset = parseInt(ipapiData.utc_offset) / 100;
+                    city = ipapiData.city || city;
+                    country = ipapiData.country_name || country;
+                } else if (geoData && geoData.timezone) {
+                    finalOffset = parseInt(geoData.timezone) || browserUtcOffset;
+                    city = geoData.city || city;
+                    country = geoData.country || country;
+                }
+
+                const timezoneInfo = document.getElementById('timezoneInfo');
+                timezoneInfo.innerHTML = `
+                    <p><strong>Ваш часовой пояс:</strong> UTC${finalOffset >= 0 ? '+' : ''}${finalOffset}</p>
+                    <p><strong>Город:</strong> ${city}</p>
+                    <p><strong>Страна:</strong> ${country}</p>
+                `;
+
+                // Устанавливаем определенный часовой пояс в select
+                document.getElementById('utc').value = Math.round(finalOffset).toString();
+            } catch (error) {
+                console.error('Error detecting timezone:', error);
+                // В случае ошибки используем часовой пояс браузера
+                const browserOffset = -(new Date().getTimezoneOffset() / 60);
+                document.getElementById('utc').value = Math.round(browserOffset).toString();
+                document.getElementById('timezoneInfo').innerHTML = `
+                    <p><strong>Ваш часовой пояс:</strong> UTC${browserOffset >= 0 ? '+' : ''}${browserOffset}</p>
+                    <p>Определено на основе настроек вашего браузера</p>
+                `;
+            }
+        }
+
+        // Обработка отправки формы
+        document.getElementById('meditationForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const formData = {
+                utc: parseInt(document.getElementById('utc').value),
+                morningTime: document.getElementById('morningTime').value,
+                noonTime: document.getElementById('noonTime').value,
+                eveningTime: document.getElementById('eveningTime').value,
+                telegramId: tg.initDataUnsafe?.user?.id || null
+            };
+
+            try {
+                const response = await fetch('https://n8n.snapn8n.ru/webhook/5e7330e2-8664-453e-a9c1-6d37484e565b', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (response.ok) {
+                    const successMessage = document.getElementById('successMessage');
+                    successMessage.style.display = 'block';
+                    setTimeout(() => {
+                        successMessage.style.display = 'none';
+                    }, 3000);
+
+                    // Закрываем Telegram WebApp после успешной отправки
+                    tg.close();
+                } else {
+                    throw new Error('Network response was not ok');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Произошла ошибка при отправке данных. Пожалуйста, попробуйте еще раз.');
+            }
+        });
+
+        // Инициализация при загрузке страницы
+        window.onload = function() {
+            populateTimeSelects();
+            detectTimezone();
+
+            // Настраиваем кнопку в стиле Telegram
+            const mainButton = document.getElementById('submitButton');
+            if (tg.MainButton) {
+                mainButton.style.display = 'none';
+                tg.MainButton.text = "Подтвердить выбор";
+                tg.MainButton.show();
+                tg.MainButton.onClick(() => {
+                    document.getElementById('meditationForm').dispatchEvent(new Event('submit'));
+                });
+            }
+        };
+    </script>
+</body>
+</html> 
