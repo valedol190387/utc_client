@@ -18,6 +18,12 @@ UTM convector
             --tg-theme-button-text-color: #fff;
         }
 
+        [data-theme="dark"] {
+            --tg-theme-bg-color: #1f1f1f;
+            --tg-theme-text-color: #fff;
+            --tg-theme-hint-color: #aaa;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -32,6 +38,7 @@ UTM convector
             max-width: 500px;
             margin: 0 auto;
             line-height: 1.5;
+            transition: background-color 0.3s ease;
         }
 
         .container {
@@ -39,6 +46,25 @@ UTM convector
             backdrop-filter: blur(10px);
             border-radius: 12px;
             padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .theme-switcher {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            cursor: pointer;
+            font-size: 24px;
+            z-index: 100;
+            background: none;
+            border: none;
+            color: var(--tg-theme-text-color);
+            transition: transform 0.3s ease;
+        }
+
+        .theme-switcher:hover {
+            transform: scale(1.1);
         }
 
         h1 {
@@ -63,6 +89,7 @@ UTM convector
 
         .form-group {
             margin-bottom: 20px;
+            position: relative;
         }
 
         label {
@@ -72,10 +99,20 @@ UTM convector
             font-size: 0.9rem;
         }
 
+        .time-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .time-label .emoji {
+            font-size: 1.2rem;
+        }
+
         select {
             width: 100%;
             padding: 12px;
-            border: 1px solid rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(128, 128, 128, 0.2);
             border-radius: 8px;
             background-color: var(--tg-theme-bg-color);
             color: var(--tg-theme-text-color);
@@ -85,6 +122,7 @@ UTM convector
             background-repeat: no-repeat;
             background-position: right 12px center;
             background-size: 12px auto;
+            transition: border-color 0.3s ease;
         }
 
         select:focus {
@@ -121,10 +159,38 @@ UTM convector
             border-radius: 8px;
             background: rgba(76, 175, 80, 0.1);
         }
+
+        @keyframes twinkle {
+            0% { opacity: 0.3; }
+            50% { opacity: 0.8; }
+            100% { opacity: 0.3; }
+        }
+
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: var(--tg-theme-text-color);
+            opacity: 0.3;
+            border-radius: 50%;
+            animation: twinkle 3s infinite;
+        }
     </style>
 </head>
 <body>
+    <div class="stars" id="stars"></div>
     <div class="container">
+        <button class="theme-switcher" id="themeSwitcher">🌕</button>
         <h1>Настройка времени медитаций</h1>
         
         <div class="timezone-info" id="timezoneInfo">
@@ -164,21 +230,30 @@ UTM convector
             </div>
 
             <div class="form-group">
-                <label for="morningTime">Время утренней медитации</label>
+                <label for="morningTime" class="time-label">
+                    <span class="emoji">🌞</span>
+                    Время утренней медитации
+                </label>
                 <select id="morningTime" name="morningTime" required>
                     <option value="">Выберите время</option>
                 </select>
             </div>
 
             <div class="form-group">
-                <label for="noonTime">Время дневной медитации</label>
+                <label for="noonTime" class="time-label">
+                    <span class="emoji">☀️</span>
+                    Время дневной медитации
+                </label>
                 <select id="noonTime" name="noonTime" required>
                     <option value="">Выберите время</option>
                 </select>
             </div>
 
             <div class="form-group">
-                <label for="eveningTime">Время вечерней медитации</label>
+                <label for="eveningTime" class="time-label">
+                    <span class="emoji">✨</span>
+                    Время вечерней медитации
+                </label>
                 <select id="eveningTime" name="eveningTime" required>
                     <option value="">Выберите время</option>
                 </select>
@@ -196,6 +271,31 @@ UTM convector
         // Инициализация Telegram WebApp
         const tg = window.Telegram.WebApp;
         tg.expand();
+
+        // Создание звезд
+        function createStars() {
+            const starsContainer = document.getElementById('stars');
+            const numberOfStars = 50;
+
+            for (let i = 0; i < numberOfStars; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.top = `${Math.random() * 100}%`;
+                star.style.animationDelay = `${Math.random() * 3}s`;
+                starsContainer.appendChild(star);
+            }
+        }
+
+        // Переключатель темы
+        let isDarkTheme = false;
+        const themeSwitcher = document.getElementById('themeSwitcher');
+        
+        themeSwitcher.addEventListener('click', () => {
+            isDarkTheme = !isDarkTheme;
+            document.body.setAttribute('data-theme', isDarkTheme ? 'dark' : 'light');
+            themeSwitcher.textContent = isDarkTheme ? '🌑' : '🌕';
+        });
 
         // Функция для форматирования времени в формат HH:MM
         function formatTime(hours, minutes) {
@@ -231,7 +331,6 @@ UTM convector
         // Определение часового пояса пользователя
         async function detectTimezone() {
             try {
-                // Используем несколько сервисов для определения временной зоны
                 const [geoResponse, ipapiResponse] = await Promise.all([
                     fetch('https://get.geojs.io/v1/ip/geo.json'),
                     fetch('https://ipapi.co/json/')
@@ -240,11 +339,9 @@ UTM convector
                 const geoData = await geoResponse.json();
                 const ipapiData = await ipapiResponse.json();
 
-                // Получаем смещение в минутах из браузера
                 const localOffset = new Date().getTimezoneOffset();
                 const browserUtcOffset = -(localOffset / 60);
 
-                // Приоритет отдаем ipapi.co, если оно доступно
                 let finalOffset = browserUtcOffset;
                 let city = 'Не определен';
                 let country = 'Не определена';
@@ -266,11 +363,9 @@ UTM convector
                     <p><strong>Страна:</strong> ${country}</p>
                 `;
 
-                // Устанавливаем определенный часовой пояс в select
                 document.getElementById('utc').value = Math.round(finalOffset).toString();
             } catch (error) {
                 console.error('Error detecting timezone:', error);
-                // В случае ошибки используем часовой пояс браузера
                 const browserOffset = -(new Date().getTimezoneOffset() / 60);
                 document.getElementById('utc').value = Math.round(browserOffset).toString();
                 document.getElementById('timezoneInfo').innerHTML = `
@@ -293,7 +388,7 @@ UTM convector
             };
 
             try {
-                const response = await fetch('https://n8n.snapn8n.ru/webhook/5e7330e2-8664-453e-a9c1-6d37484e565b', {
+                const response = await fetch('https://orutixit.beget.app/webhook/5e7330e2-8664-453e-a9c1-6d37484e565b', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -306,10 +401,8 @@ UTM convector
                     successMessage.style.display = 'block';
                     setTimeout(() => {
                         successMessage.style.display = 'none';
-                    }, 3000);
-
-                    // Закрываем Telegram WebApp после успешной отправки
-                    tg.close();
+                        tg.close();
+                    }, 2000);
                 } else {
                     throw new Error('Network response was not ok');
                 }
@@ -321,6 +414,7 @@ UTM convector
 
         // Инициализация при загрузке страницы
         window.onload = function() {
+            createStars();
             populateTimeSelects();
             detectTimezone();
 
